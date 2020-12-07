@@ -1,4 +1,7 @@
 class CatsController < ApplicationController
+
+  before_action :ensure_owner, only: [:index, :show, :new, :create]
+
   def index
     @cats = Cat.all
     render :index
@@ -17,6 +20,7 @@ class CatsController < ApplicationController
   def create
     @cat = Cat.new(cat_params)
     if @cat.save
+      current_user.id = @cat[:user_id]
       redirect_to cat_url(@cat)
     else
       flash.now[:errors] = @cat.errors.full_messages
